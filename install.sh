@@ -139,6 +139,16 @@ if [ "${LIMITS_SET}" ]
     echo "session required pam_limits.so" >> "/etc/pam.d/common-session"
 fi
 
+IPTABLES_SET=$(grep 'iptables' /etc/crontab)
+if [ "${IPTABLES_SET}" ]
+ then
+    echo "Iptables set in crontab"
+ else
+    echo -ne "
+@reboot	root iptables-restore < /etc/default/iptables
+" >> "/etc/crontab"
+fi
+
 ### SSH config
 >/etc/ssh/sshd_config << EOF
 Port 22
