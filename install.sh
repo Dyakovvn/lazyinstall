@@ -111,6 +111,15 @@ DefaultLimitCORE=infinity
 DefaultLimitNPROC=320000
 EOF
 
+# Отключаем iptables в докере и рулим iptables`ом сами. Ибо это самый безопасный и контролируемый способ. В большинстве установок
+IPTABLESDOCKER_SET=$(grep 'iptables=false' /lib/systemd/system/docker.service)
+if [ "${IPTABLESDOCKER_SET}" ]
+ then
+    echo "Iptables alerady disabled in docker"
+ else
+    sed -i 's/containerd.sock/containerd.sock --iptables=false/g' /lib/systemd/system/docker.service
+fi
+
 systemctl daemon-reload
 
 # pam tweaks
@@ -142,7 +151,7 @@ fi
 IPTABLES_SET=$(grep 'iptables' /etc/crontab)
 if [ "${IPTABLES_SET}" ]
  then
-    echo "Iptables set in crontab"
+    echo "Iptables alerady set in crontab"
  else
     echo -ne "
 @reboot	root iptables-restore < /etc/default/iptables
@@ -176,3 +185,14 @@ service ssh restart
 ### NtpDate sync
 apt remove ntp -y
 echo "0 * * * * root /usr/sbin/ntpdate 1.ru.pool.ntp.org 1>/dev/null 2>&1" > /etc/cron.d/ntpdate
+
+mkdir -p /root/scripts
+wget -O /root/scripts/iptables https://raw.githubusercontent.com/Dyakovvn/lazyinstall/master/base_iptables.sh && chmod +x /root/scripts/iptables
+
+read -p "Execute Iptables now? Y/n" -n 1 -r
+echo
+if [[ $REPLY =~ ^[Yy]$ ]]
+then
+    /bin/bash /root/scripts/iptables
+fi
+

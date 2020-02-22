@@ -47,6 +47,8 @@ iptables -A INPUT -p icmp -m icmp --icmp-type 12 -j ACCEPT
 
 # ssh
 iptables -A INPUT -p tcp -m multiport --dport 22 -j ACCEPT
+
+# web http + https
 iptables -A INPUT -p tcp -m multiport --dport 80 -j ACCEPT
 iptables -A INPUT -p tcp -m multiport --dport 443 -j ACCEPT
 
