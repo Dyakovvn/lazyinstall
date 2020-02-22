@@ -44,11 +44,15 @@ apt install -y \
     bash-completion \
     bash-completion-extras \
     bc \
-    sshpass
+    sshpass \
+    cpufrequtils
 
 curl -L "https://github.com/docker/compose/releases/download/1.25.3/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
 chmod +x /usr/local/bin/docker-compose
 ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
+
+echo 'GOVERNOR="performance"' | sudo tee /etc/default/cpufrequtils
+systemctl disable ondemand
 
 # some basic sysctl tweaks
 >/etc/sysctl.d/99-tweaks.conf << EOF
