@@ -130,7 +130,14 @@ root - stack unlimited
 
 EOF
 
-echo "session required pam_limits.so" >> "/etc/pam.d/common-session"
+
+LIMITS_SET=$(grep 'session required pam_limits' /etc/security/limits.conf)
+if [ "${LIMITS_SET}" ]
+ then
+    echo "session required pam_limits already set to /etc/security/limits.conf"
+ else
+    echo "session required pam_limits.so" >> "/etc/pam.d/common-session"
+fi
 
 ### SSH config
 >/etc/ssh/sshd_config << EOF
@@ -159,4 +166,3 @@ service ssh restart
 ### NtpDate sync
 apt remove ntp -y
 echo "0 * * * * root /usr/sbin/ntpdate 1.ru.pool.ntp.org 1>/dev/null 2>&1" > /etc/cron.d/ntpdate
-
