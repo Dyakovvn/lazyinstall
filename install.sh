@@ -49,4 +49,7 @@ sysctl -p /etc/sysctl.d/99-tweaks.conf
 # systemd tweaks
 sed -i 's/#DefaultLimitNOFILE=/DefaultLimitNOFILE=2097152/g' /etc/systemd/system.conf
 sed -i "s/#DefaultLimitMEMLOCK=/DefaultLimitMEMLOCK=infinity/g" /etc/systemd/system.conf
+sed -i "s/#DefaultLimitAS=/DefaultLimitAS=infinity/g" /etc/systemd/system.conf
+sed -i "s/#DefaultLimitRSS=/DefaultLimitRSS=infinity/g" /etc/systemd/system.conf
+sed -i "s/#DefaultLimitCORE=/DefaultLimitCORE=infinity/g" /etc/systemd/system.conf
 systemctl daemon-reload
