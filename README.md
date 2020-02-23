@@ -3,6 +3,6 @@
 Также, эту хрень можно заюзать знакомым, чтобы быстро себе накатывать на виртуалки доцкер и т.д.
 Много сделано "в лоб" но шо паделать `¯\_(ツ)_/¯`
 
-`wget -qO- https://raw.githubusercontent.com/Dyakovvn/lazyinstall/master/install.sh | bash`
+`wget -O /tmp/install.sh https://raw.githubusercontent.com/Dyakovvn/lazyinstall/master/install.sh && /bin/bash /tmp/install.sh`
 
 install docker + docker-compose, get some system tweaks
