@@ -191,7 +191,8 @@ apt remove ntp -y
 echo "0 * * * * root /usr/sbin/ntpdate 1.ru.pool.ntp.org 1>/dev/null 2>&1" > /etc/cron.d/ntpdate
 
 mkdir -p /root/scripts
-wget -O /root/scripts/iptables https://raw.githubusercontent.com/Dyakovvn/lazyinstall/master/base_iptables.sh && chmod +x /root/scripts/iptables
+wget -O /root/scripts/iptables https://raw.githubusercontent.com/Dyakovvn/lazyinstall/master/base_iptables.sh
+chmod +x /root/scripts/iptables
 
 read -p "Execute Iptables now? Y/n" -n 1 -r
 echo
