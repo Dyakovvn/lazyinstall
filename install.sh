@@ -32,7 +32,6 @@ apt install -y \
     ntpdate \
     lsof \
     net-tools \
-    bind-utils \
     telnet \
     traceroute \
     vim \
@@ -42,14 +41,13 @@ apt install -y \
     logrotate \
     iotop \
     bash-completion \
-    bash-completion-extras \
     bc \
     sshpass \
     cpufrequtils
 
 curl -L "https://github.com/docker/compose/releases/download/1.25.3/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
 chmod +x /usr/local/bin/docker-compose
-ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
+ln -sf /usr/local/bin/docker-compose /usr/bin/docker-compose
 
 echo 'GOVERNOR="performance"' | sudo tee /etc/default/cpufrequtils
 systemctl disable ondemand
@@ -191,13 +189,13 @@ apt remove ntp -y
 echo "0 * * * * root /usr/sbin/ntpdate 1.ru.pool.ntp.org 1>/dev/null 2>&1" > /etc/cron.d/ntpdate
 
 mkdir -p /root/scripts
-wget -O /root/scripts/iptables https://raw.githubusercontent.com/Dyakovvn/lazyinstall/master/base_iptables.sh
-chmod +x /root/scripts/iptables
+wget -O /root/scripts/iptables.sh https://raw.githubusercontent.com/Dyakovvn/lazyinstall/master/base_iptables.sh
+chmod +x /root/scripts/iptables.sh
 
 read -p "Execute Iptables now? Y/n" -n 1 -r
-echo
+echo ""
 if [[ $REPLY =~ ^[Yy]$ ]]
 then
-    /bin/bash /root/scripts/iptables
+    /bin/bash /root/scripts/iptables.sh
 fi
 
