@@ -193,9 +193,10 @@ wget -O /root/scripts/iptables.sh https://raw.githubusercontent.com/Dyakovvn/laz
 chmod +x /root/scripts/iptables.sh
 
 read -p "Execute Iptables now? Y/n" -n 1 -r
+if [[ ! $REPLY =~ ^[Yy]$ ]]
 echo ""
-if [[ $REPLY =~ ^[Yy]$ ]]
 then
+    echo "Install Iptables skipped"
+else
     /bin/bash /root/scripts/iptables.sh
 fi
-
