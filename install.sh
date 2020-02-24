@@ -4,12 +4,14 @@
 # wget -O - https://raw.githubusercontent.com/Dyakovvn/lazyinstall/master/install.sh | bash
 # install docker + docker-compose, get some system tweaks
 
-apt update && apt upgrade -y
-apt install -y apt-transport-https ca-certificates curl software-properties-common
+
+apt -qq update && apt -qq upgrade -y
+apt -qq install -y apt-transport-https ca-certificates curl software-properties-common
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
 add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" -y
-apt update
-apt install -y \
+apt -qq update
+echo "Install packages"
+apt -qq install -y \
     zip \
     curl \
     docker-ce \
@@ -45,14 +47,16 @@ apt install -y \
     sshpass \
     cpufrequtils
 
-curl -L "https://github.com/docker/compose/releases/download/1.25.3/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+echo "Install docker-compose.."
+curl -sL "https://github.com/docker/compose/releases/download/1.25.3/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
 chmod +x /usr/local/bin/docker-compose
 ln -sf /usr/local/bin/docker-compose /usr/bin/docker-compose
 
+echo "CPU Governor performance"
 echo 'GOVERNOR="performance"' | sudo tee /etc/default/cpufrequtils
 systemctl disable ondemand
 
-# some basic sysctl tweaks
+echo "Some sysctl tweaks"
 >/etc/sysctl.d/99-tweaks.conf << EOF
 kernel.shmmax = 1073741824
 kernel.shmmax = 1073741824
@@ -92,7 +96,7 @@ EOF
 
 sysctl -p /etc/sysctl.d/99-tweaks.conf
 
-# systemd tweaks
+echo "Some systemd tweaks"
 >/etc/systemd/system.conf << EOF
 [Manager]
 DefaultLimitNOFILE=2097152
@@ -113,18 +117,7 @@ DefaultLimitCORE=infinity
 DefaultLimitNPROC=320000
 EOF
 
-# Отключаем iptables в докере и рулим iptables`ом сами. Ибо это самый безопасный и контролируемый способ. В большинстве установок
-IPTABLESDOCKER_SET=$(grep 'iptables=false' /lib/systemd/system/docker.service)
-if [ "${IPTABLESDOCKER_SET}" ]
- then
-    echo "Iptables alerady disabled in docker"
- else
-    sed -i 's/containerd.sock/containerd.sock --iptables=false/g' /lib/systemd/system/docker.service
-fi
-
-systemctl daemon-reload
-
-# pam tweaks
+echo "pam tweaks"
 >/etc/security/limits.conf << EOF
 # /etc/security/limits.conf
 * - memlock unlimited
@@ -141,7 +134,7 @@ root - stack unlimited
 
 EOF
 
-
+echo "activate pam limits"
 LIMITS_SET=$(grep 'session required pam_limits' /etc/security/limits.conf)
 if [ "${LIMITS_SET}" ]
  then
@@ -150,6 +143,20 @@ if [ "${LIMITS_SET}" ]
     echo "session required pam_limits.so" >> "/etc/pam.d/common-session"
 fi
 
+
+# Отключаем iptables в докере и рулим iptables`ом сами. Ибо это самый безопасный и контролируемый способ. В большинстве установок
+echo "Disable docker autoconfiguration iptables."
+IPTABLESDOCKER_SET=$(grep 'iptables=false' /lib/systemd/system/docker.service)
+if [ "${IPTABLESDOCKER_SET}" ]
+ then
+    echo "Iptables alerady disabled in docker"
+ else
+    sed -i 's/containerd.sock/containerd.sock --iptables=false/g' /lib/systemd/system/docker.service
+fi
+systemctl daemon-reload
+
+
+echo "Activate iptables after reboot"
 IPTABLES_SET=$(grep 'iptables' /etc/crontab)
 if [ "${IPTABLES_SET}" ]
  then
@@ -160,7 +167,7 @@ if [ "${IPTABLES_SET}" ]
 " >> "/etc/crontab"
 fi
 
-### SSH config
+echo "SSH config. Disable password auth and dns resolve"
 >/etc/ssh/sshd_config << EOF
 Port 22
 Protocol 2
@@ -184,19 +191,22 @@ Subsystem	sftp	/usr/lib/openssh/sftp-server
 EOF
 service ssh restart
 
-### NtpDate sync
+echo "Install NtpDate sync"
 apt remove ntp -y
 echo "0 * * * * root /usr/sbin/ntpdate 1.ru.pool.ntp.org 1>/dev/null 2>&1" > /etc/cron.d/ntpdate
 
+echo "Create /root/scripts dir with iptables bash file"
 mkdir -p /root/scripts
 wget -O /root/scripts/iptables.sh https://raw.githubusercontent.com/Dyakovvn/lazyinstall/master/base_iptables.sh
 chmod +x /root/scripts/iptables.sh
 
 read -p "Execute Iptables now? Y/n" -n 1 -r
 if [[ ! $REPLY =~ ^[Yy]$ ]]
-echo ""
 then
+    echo ""
     echo "Install Iptables skipped"
 else
     /bin/bash /root/scripts/iptables.sh
 fi
+
+echo "done. Reboot system now"
