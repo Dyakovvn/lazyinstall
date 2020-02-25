@@ -1,15 +1,14 @@
 #!/bin/bash
 
 # Tested on Ubuntu 18.04
-# wget -O - https://raw.githubusercontent.com/Dyakovvn/lazyinstall/master/install.sh | bash
-# install docker + docker-compose, get some system tweaks
 
-
-apt -qq update && apt -qq upgrade -y
-apt -qq install -y apt-transport-https ca-certificates curl software-properties-common
+echo "Apt update"
+apt -qq update > /dev/null && apt -qq upgrade -y  > /dev/null
+apt -qq install -y apt-transport-https ca-certificates curl software-properties-common  > /dev/null
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" -y
-apt -qq update
+add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" -y  > /dev/null
+apt -qq update  > /dev/null
+
 echo "Install packages"
 apt -qq install -y \
     zip \
@@ -47,7 +46,8 @@ apt -qq install -y \
     sshpass \
     cpufrequtils \
     ipset \
-    certbot
+    certbot \
+     > /dev/null
 
 echo "Install docker-compose.."
 curl -sL "https://github.com/docker/compose/releases/download/1.25.3/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
@@ -205,13 +205,20 @@ mkdir -p /root/scripts
 wget -O /root/scripts/iptables.sh https://raw.githubusercontent.com/Dyakovvn/lazyinstall/master/base_iptables.sh
 chmod +x /root/scripts/iptables.sh
 
-read -p "Execute Iptables now? Y/n" -n 1 -r
-if [[ ! $REPLY =~ ^[Yy]$ ]]
-then
-    echo ""
-    echo "Install Iptables skipped"
-else
-    /bin/bash /root/scripts/iptables.sh
-fi
+
+while true; do
+    read -p "Execute Iptables now?" yn
+    case $yn in
+        [Yy]* ) 
+	    /bin/bash /root/scripts/iptables.sh
+	    break
+	;;
+        [Nn]* ) 
+	    echo "Install Iptables skipped";
+	    break
+	;;
+        * ) echo "Please answer yes or no.";;
+    esac
+done
 
 echo "done. Reboot system now"
