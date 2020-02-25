@@ -45,7 +45,9 @@ apt -qq install -y \
     bash-completion \
     bc \
     sshpass \
-    cpufrequtils
+    cpufrequtils \
+    ipset \
+    certbot
 
 echo "Install docker-compose.."
 curl -sL "https://github.com/docker/compose/releases/download/1.25.3/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
@@ -193,7 +195,10 @@ service ssh restart
 
 echo "Install NtpDate sync"
 apt remove ntp -y
+
+echo "Install cron"
 echo "0 * * * * root /usr/sbin/ntpdate 1.ru.pool.ntp.org 1>/dev/null 2>&1" > /etc/cron.d/ntpdate
+echo "*/5 * * * * root /bin/bash /root/scripts/iptables.sh reload" > /etc/cron.d/ipset
 
 echo "Create /root/scripts dir with iptables bash file"
 mkdir -p /root/scripts
