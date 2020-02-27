@@ -147,16 +147,29 @@ fi
 
 
 # Отключаем iptables в докере и рулим iptables`ом сами. Ибо это самый безопасный и контролируемый способ. В большинстве установок
-echo "Disable docker autoconfiguration iptables."
-IPTABLESDOCKER_SET=$(grep 'iptables=false' /lib/systemd/system/docker.service)
-if [ "${IPTABLESDOCKER_SET}" ]
- then
-    echo "Iptables alerady disabled in docker"
- else
-    sed -i 's/containerd.sock/containerd.sock --iptables=false/g' /lib/systemd/system/docker.service
-fi
-systemctl daemon-reload
+while true; do
+    read -p "Disable docker autoconfiguration iptables?" ynd
+    case $ynd in
+        [Yy]* )
 
+		IPTABLESDOCKER_SET=$(grep 'iptables=false' /lib/systemd/system/docker.service)
+		if [ "${IPTABLESDOCKER_SET}" ]
+		then
+		    echo "Iptables alerady disabled in docker"
+		else
+		    sed -i 's/containerd.sock/containerd.sock --iptables=false/g' /lib/systemd/system/docker.service
+		    systemctl daemon-reload
+		    echo "Docker iptables disabled successfull."
+		fi
+            break
+        ;;
+        [Nn]* )
+            echo "Skipped....";
+            break
+        ;;
+        * ) echo "Please answer yes or no.";;
+    esac
+done
 
 echo "Activate iptables after reboot"
 IPTABLES_SET=$(grep 'iptables' /etc/crontab)
