@@ -163,29 +163,29 @@ fi
 
 
 # Отключаем iptables в докере и рулим iptables`ом сами.
-while true; do
-    read -p "Docker --iptables=false? (Y/n)" ynd
-    case $ynd in
-        [Yy]* )
-
-		IPTABLESDOCKER_SET=$(grep 'iptables=false' /lib/systemd/system/docker.service)
-		if [ "${IPTABLESDOCKER_SET}" ]
-		then
-		    echo "Iptables alerady disabled in docker"
-		else
-		    sed -i 's/containerd.sock/containerd.sock --iptables=false/g' /lib/systemd/system/docker.service
-		    systemctl daemon-reload
-		    echo "Docker iptables disabled successfull."
-		fi
-            break
-        ;;
-        [Nn]* )
-            echo "Skipped....";
-            break
-        ;;
-        * ) echo "Please answer yes or no.";;
-    esac
-done
+#while true; do
+#    read -p "Docker --iptables=false? (Y/n)" ynd
+#    case $ynd in
+#        [Yy]* )
+#
+#		IPTABLESDOCKER_SET=$(grep 'iptables=false' /lib/systemd/system/docker.service)
+#		if [ "${IPTABLESDOCKER_SET}" ]
+#		then
+#		    echo "Iptables alerady disabled in docker"
+#		else
+#		    sed -i 's/containerd.sock/containerd.sock --iptables=false/g' /lib/systemd/system/docker.service
+#		    systemctl daemon-reload
+#		    echo "Docker iptables disabled successfull."
+#		fi
+#            break
+#        ;;
+#        [Nn]* )
+#            echo "Skipped....";
+#            break
+#        ;;
+#        * ) echo "Please answer yes or no.";;
+#    esac
+#done
 
 echo "SSH config. Disable password auth and dns resolve"
 cat <<EOF > /etc/ssh/sshd_config
