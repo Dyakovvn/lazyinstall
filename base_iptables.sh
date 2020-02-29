@@ -123,9 +123,6 @@ function ipt_start()
     # Allow all for IPs from IPSET table
     iptables -t filter -A INPUT -m set --match-set access src -m comment --comment "Secure access list" -j ACCEPT
     iptables -t filter -A INPUT -m set --match-set day_whitelist src -m comment --comment "DAY Access access list" -j ACCEPT
-
-    iptables-save > /etc/default/iptables
-    echo "Firewall started"
 }
 
 case $1 in
@@ -140,6 +137,10 @@ case $1 in
 
     start)
         ipt_start
+        ipt_reload
+        ipset save > /etc/default/ipset
+        iptables-save > /etc/default/iptables
+        echo "Firewall started"
     ;;
 
     ipset|reload)

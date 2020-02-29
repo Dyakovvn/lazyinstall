@@ -47,6 +47,8 @@ apt -qq install -y \
     cpufrequtils \
     ipset \
     certbot \
+    nmap \
+    python \
      > /dev/null
 
 echo "Install docker-compose.."
@@ -191,9 +193,7 @@ if [ "${IPTABLES_SET}" ]
  then
     echo "Iptables alerady set in crontab"
  else
-    echo -ne "
-@reboot	root iptables-restore < /etc/default/iptables
-" >> "/etc/crontab"
+    echo "@reboot root    sh -c '/bin/bash /root/scripts/iptables.sh start'" >> "/etc/cron.d/iptables"
 fi
 
 echo "SSH config. Disable password auth and dns resolve"
