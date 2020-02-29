@@ -146,9 +146,9 @@ if [ "${LIMITS_SET}" ]
 fi
 
 
-# Отключаем iptables в докере и рулим iptables`ом сами. Ибо это самый безопасный и контролируемый способ. В большинстве установок
+# Отключаем iptables в докере и рулим iptables`ом сами.
 while true; do
-    read -p "Disable docker autoconfiguration iptables?" ynd
+    read -p "Docker --iptables=false?" ynd
     case $ynd in
         [Yy]* )
 
@@ -217,7 +217,6 @@ echo "Create /root/scripts dir with iptables bash file"
 mkdir -p /root/scripts
 wget -O /root/scripts/iptables.sh https://raw.githubusercontent.com/Dyakovvn/lazyinstall/master/base_iptables.sh
 chmod +x /root/scripts/iptables.sh
-
 
 while true; do
     read -p "Execute Iptables now?" yn
