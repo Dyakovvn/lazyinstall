@@ -222,10 +222,11 @@ while true; do
     read -p "Execute Iptables now?" yn
     case $yn in
         [Yy]* ) 
-	    /bin/bash /root/scripts/iptables.sh
+	    /bin/bash /root/scripts/iptables.sh start
 	    break
 	;;
         [Nn]* ) 
+	    /bin/bash /root/scripts/iptables.sh reload
 	    echo "Install Iptables skipped";
 	    break
 	;;
