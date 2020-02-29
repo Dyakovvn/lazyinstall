@@ -136,6 +136,20 @@ root - stack unlimited
 
 EOF
 
+echo "Disable host security cheking on root profile"
+HOSTSEC_SET=$(grep 'StrictHostKeyChecking no' /root/.ssh/config)
+if [ "${HOSTSEC_SET}" ]
+ then
+    echo "StrictHostKeyChecking alerady set"
+ else
+cat <<EOF >> /root/.ssh/config
+Host *
+   StrictHostKeyChecking no
+   UserKnownHostsFile=/dev/null
+EOF
+fi
+
+
 echo "activate pam limits"
 LIMITS_SET=$(grep 'session required pam_limits' /etc/security/limits.conf)
 if [ "${LIMITS_SET}" ]
