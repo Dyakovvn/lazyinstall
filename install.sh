@@ -59,7 +59,7 @@ echo 'GOVERNOR="performance"' | sudo tee /etc/default/cpufrequtils
 systemctl disable ondemand
 
 echo "Some sysctl tweaks"
->/etc/sysctl.d/99-tweaks.conf << EOF
+cat <<EOF > /etc/sysctl.d/99-tweaks.conf
 kernel.shmmax = 1073741824
 kernel.shmmax = 1073741824
 kernel.pid_max = 2097152
@@ -99,7 +99,7 @@ EOF
 sysctl -p /etc/sysctl.d/99-tweaks.conf
 
 echo "Some systemd tweaks"
->/etc/systemd/system.conf << EOF
+cat <<EOF > /etc/systemd/system.conf
 [Manager]
 DefaultLimitNOFILE=2097152
 DefaultLimitMEMLOCK=infinity
@@ -109,7 +109,7 @@ DefaultLimitCORE=infinity
 DefaultLimitNPROC=320000
 EOF
 
->/etc/systemd/user.conf << EOF
+cat <<EOF > /etc/systemd/user.conf
 [Manager]
 DefaultLimitNOFILE=2097152
 DefaultLimitMEMLOCK=infinity
@@ -120,7 +120,7 @@ DefaultLimitNPROC=320000
 EOF
 
 echo "pam tweaks"
->/etc/security/limits.conf << EOF
+cat <<EOF > /etc/security/limits.conf
 # /etc/security/limits.conf
 * - memlock unlimited
 * - nofile 2097152
@@ -183,7 +183,7 @@ if [ "${IPTABLES_SET}" ]
 fi
 
 echo "SSH config. Disable password auth and dns resolve"
->/etc/ssh/sshd_config << EOF
+cat <<EOF > /etc/ssh/sshd_config
 Port 22
 Protocol 2
 PermitUserEnvironment yes
