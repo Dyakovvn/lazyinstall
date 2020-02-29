@@ -164,7 +164,7 @@ fi
 
 # Отключаем iptables в докере и рулим iptables`ом сами.
 while true; do
-    read -p "Docker --iptables=false?" ynd
+    read -p "Docker --iptables=false? (Y/n)" ynd
     case $ynd in
         [Yy]* )
 
@@ -186,15 +186,6 @@ while true; do
         * ) echo "Please answer yes or no.";;
     esac
 done
-
-echo "Activate iptables after reboot"
-IPTABLES_SET=$(grep 'iptables' /etc/crontab)
-if [ "${IPTABLES_SET}" ]
- then
-    echo "Iptables alerady set in crontab"
- else
-    echo "@reboot root    sh -c '/bin/bash /root/scripts/iptables.sh start'" >> "/etc/cron.d/iptables"
-fi
 
 echo "SSH config. Disable password auth and dns resolve"
 cat <<EOF > /etc/ssh/sshd_config
@@ -226,10 +217,14 @@ apt remove ntp -y
 echo "Install cron"
 echo "0 * * * * root /usr/sbin/ntpdate 1.ru.pool.ntp.org 1>/dev/null 2>&1" > /etc/cron.d/ntpdate
 echo "*/5 * * * * root /bin/bash /root/scripts/iptables.sh reload" > /etc/cron.d/ipset
+echo "@reboot root    sh -c '/bin/bash /root/scripts/iptables.sh start'" > /etc/cron.d/iptables
+
 
 echo "Create /root/scripts dir with iptables bash file"
 mkdir -p /root/scripts
 wget -O /root/scripts/iptables.sh https://raw.githubusercontent.com/Dyakovvn/lazyinstall/master/base_iptables.sh
+wget -O /root/scripts/rules.v4 https://raw.githubusercontent.com/Dyakovvn/lazyinstall/master/rules.v4
+wget -O /root/scripts/rules.v6 https://raw.githubusercontent.com/Dyakovvn/lazyinstall/master/rules.v6
 chmod +x /root/scripts/iptables.sh
 
 while true; do
