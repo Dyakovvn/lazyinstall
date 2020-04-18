@@ -50,6 +50,8 @@ apt -qq install -y \
     nmap \
     python \
      > /dev/null
+     
+fail2ban-client start sshd
 
 echo "Install docker-compose.."
 curl -sL "https://github.com/docker/compose/releases/download/1.25.3/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
